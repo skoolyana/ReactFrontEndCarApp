@@ -65,9 +65,7 @@ function App() {
     fetch(SERVER_URL + "api/cars")
     .then((response) => response.json())
     .then((responseData) => {
-      this.setState({
-        cars: responseData._embedded.cars,
-      });
+      setData(responseData._embedded.cars);
     })
     .catch((err) => console.error(err));
 
