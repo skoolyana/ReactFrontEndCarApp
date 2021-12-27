@@ -1,10 +1,57 @@
+import React from 'react';
+import { useEffect } from "react";
+import { useState } from "react";
+import { useMemo } from "react";
+import axios from "axios";
+import Table from "./Table";
+import { SERVER_URL } from "./constants";
+
 import './App.css';
 import { AppBar } from '@material-ui/core';
 import { Toolbar } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
-import CarList from './components/CarList';
+
 
 function App() {
+
+
+  const columns = useMemo(() => [
+    {
+      Header: "Brand",
+      accessor: "brand",
+    },
+    {
+      Header: "Model",
+      accessor: "model",
+    },
+    {
+      Header: "Color",
+      accessor: "color",
+    },
+    {
+      Header: "Year",
+      accessor: "year",
+    },
+    {
+      Header: "Price €",
+      accessor: "price",
+    },
+  ], []);
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const result = await axios(SERVER_URL + "api/cars");
+      console.log("Sunil");
+
+      console.log(result.data);
+      
+
+      setData(result.data._embedded.cars);
+    })();
+  }, []);
+
   return (
     <div className="App">
 
@@ -16,7 +63,8 @@ function App() {
         </Toolbar>
          
       </AppBar>
-      <CarList></CarList>
+         
+      <Table columns={columns} data={data} />
     </div>
   );
 }
