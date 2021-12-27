@@ -7,7 +7,7 @@ import Table from "./Table";
 import { SERVER_URL } from "./constants";
 
 import './App.css';
-import { AppBar } from '@material-ui/core';
+import { AppBar, Button } from '@material-ui/core';
 import { Toolbar } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 
@@ -36,7 +36,15 @@ function App() {
       Header: "Price €",
       accessor: "price",
     },
-  ], []);
+    {
+      id:'delButton',
+      sortable:false,
+      filterable:false,
+      width: 100,
+      accessor: '_links.self.href',
+      Cell: ({value}) => ((<button
+        onClick={()=>{onDelClick(value)}}>Delete</button>))
+    }], []);
 
   const [data, setData] = useState([]);
 
@@ -52,6 +60,25 @@ function App() {
     })();
   }, []);
 
+  function fetchCarData()
+  {
+    fetch(SERVER_URL + "api/cars")
+    .then((response) => response.json())
+    .then((responseData) => {
+      this.setState({
+        cars: responseData._embedded.cars,
+      });
+    })
+    .catch((err) => console.error(err));
+
+  }
+  
+
+  function onDelClick(link) {
+   
+    fetch(link, {method: 'DELETE'}).then(res => fetchCarData()).catch(err => console.error(err));
+  }
+
   return (
     <div className="App">
 
@@ -63,7 +90,7 @@ function App() {
         </Toolbar>
          
       </AppBar>
-         
+     
       <Table columns={columns} data={data} />
     </div>
   );
