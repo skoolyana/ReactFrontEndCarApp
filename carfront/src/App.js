@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AddCar from "./components/AddCar";
 import EditCar from "./components/EditCar";
+import { CSVLink } from "react-csv";
 
 function App() {
   const columns = useMemo(
@@ -155,6 +156,8 @@ function App() {
       </AppBar>
 
       <AddCar addCar={addCar} fetchCars={fetchCarData} />
+
+      <CSVLink data={data} separator=";">Export CSV</CSVLink>
 
       <Table columns={columns} data={data} />
 
