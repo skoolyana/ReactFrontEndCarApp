@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 import AddCar from "./components/AddCar";
+import EditCar from "./components/EditCar";
 
 function App() {
   const columns = useMemo(
@@ -39,6 +40,14 @@ function App() {
       {
         Header: "Price €",
         accessor: "price",
+      },
+      {
+        sortable: false,
+        filterable: false,
+        width: 100,      
+        accessor: '_links.self.href',
+        Cell: ({value, row}) => (<EditCar car={row} link={value} updateCar={updateCar} 
+          fetchCars={fetchCarData} />),
       },
       {
         id: "delButton",
@@ -93,6 +102,28 @@ function App() {
   }
 
   
+  function updateCar(car, link)
+  {
+    fetch(link,
+    {method:'PUT', headers : {
+      'Content-Type' : 'application/json', },
+      body: JSON.stringify(car)
+    }).then((res) => 
+    {
+      toast.success("Car Updated", {
+        position: toast.POSITION.BOTTOM_LEFT,
+      });
+      fetchCarData();
+
+    }).catch((err) => {
+      toast.error("Error when updating", {
+        position: toast.POSITION.BOTTOM_LEFT,
+      });
+      console.error(err);
+    });
+  }
+
+
 
   function onDelClick(link) {
     if (window.confirm("Are you sure to delete?")) {
