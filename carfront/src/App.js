@@ -18,6 +18,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AddCar from "./components/AddCar";
 import EditCar from "./components/EditCar";
 import { CSVLink } from "react-csv";
+import { Grid } from "@material-ui/core";
 
 function App() {
   const columns = useMemo(
@@ -45,10 +46,16 @@ function App() {
       {
         sortable: false,
         filterable: false,
-        width: 100,      
-        accessor: '_links.self.href',
-        Cell: ({value, row}) => (<EditCar car={row} link={value} updateCar={updateCar} 
-          fetchCars={fetchCarData} />),
+        width: 100,
+        accessor: "_links.self.href",
+        Cell: ({ value, row }) => (
+          <EditCar
+            car={row}
+            link={value}
+            updateCar={updateCar}
+            fetchCars={fetchCarData}
+          />
+        ),
       },
       {
         id: "delButton",
@@ -57,13 +64,15 @@ function App() {
         width: 100,
         accessor: "_links.self.href",
         Cell: ({ value }) => (
-          <button
+          <Button
+            color="secondary"
+            size="small"
             onClick={() => {
               onDelClick(value);
             }}
           >
             Delete
-          </button>
+          </Button>
         ),
       },
     ],
@@ -75,10 +84,6 @@ function App() {
   useEffect(() => {
     (async () => {
       const result = await axios(SERVER_URL + "api/cars");
-      console.log("Sunil");
-
-      console.log(result.data);
-
       setData(result.data._embedded.cars);
     })();
   }, []);
@@ -92,39 +97,39 @@ function App() {
       .catch((err) => console.error(err));
   }
 
-  function addCar(car)
-  {
-    fetch(SERVER_URL + "api/cars",
-    {method:'POST', headers : {
-      'Content-Type' : 'application/json', },
-      body: JSON.stringify(car)
-    }).then((res) =>  fetchCarData() ).catch(err => console.error(err))
-
+  function addCar(car) {
+    fetch(SERVER_URL + "api/cars", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(car),
+    })
+      .then((res) => fetchCarData())
+      .catch((err) => console.error(err));
   }
 
-  
-  function updateCar(car, link)
-  {
-    fetch(link,
-    {method:'PUT', headers : {
-      'Content-Type' : 'application/json', },
-      body: JSON.stringify(car)
-    }).then((res) => 
-    {
-      toast.success("Car Updated", {
-        position: toast.POSITION.BOTTOM_LEFT,
+  function updateCar(car, link) {
+    fetch(link, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(car),
+    })
+      .then((res) => {
+        toast.success("Car Updated", {
+          position: toast.POSITION.BOTTOM_LEFT,
+        });
+        fetchCarData();
+      })
+      .catch((err) => {
+        toast.error("Error when updating", {
+          position: toast.POSITION.BOTTOM_LEFT,
+        });
+        console.error(err);
       });
-      fetchCarData();
-
-    }).catch((err) => {
-      toast.error("Error when updating", {
-        position: toast.POSITION.BOTTOM_LEFT,
-      });
-      console.error(err);
-    });
   }
-
-
 
   function onDelClick(link) {
     if (window.confirm("Are you sure to delete?")) {
@@ -146,7 +151,6 @@ function App() {
 
   return (
     <div className="App">
-
       <AppBar position="static" color="default">
         <Toolbar>
           <Typography variant="h6" color="inherit">
@@ -155,9 +159,16 @@ function App() {
         </Toolbar>
       </AppBar>
 
-      <AddCar addCar={addCar} fetchCars={fetchCarData} />
-
-      <CSVLink data={data} separator=";">Export CSV</CSVLink>
+      <Grid container>
+        <Grid item>
+          <AddCar addCar={addCar} fetchCars={fetchCarData} />
+        </Grid>
+        <Grid item style={{ padding: 15 }}>
+          <CSVLink data={data} separator=";">
+            Export CSV
+          </CSVLink>
+        </Grid>
+      </Grid>
 
       <Table columns={columns} data={data} />
 
