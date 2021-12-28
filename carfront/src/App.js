@@ -15,6 +15,7 @@ import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+import AddCar from "./components/AddCar";
 
 function App() {
   const columns = useMemo(
@@ -81,6 +82,18 @@ function App() {
       .catch((err) => console.error(err));
   }
 
+  function addCar(car)
+  {
+    fetch(SERVER_URL + "api/cars",
+    {method:'POST', headers : {
+      'Content-Type' : 'application/json', },
+      body: JSON.stringify(car)
+    }).then((res) =>  fetchCarData() ).catch(err => console.error(err))
+
+  }
+
+  
+
   function onDelClick(link) {
     if (window.confirm("Are you sure to delete?")) {
       fetch(link, { method: "DELETE" })
@@ -101,6 +114,7 @@ function App() {
 
   return (
     <div className="App">
+
       <AppBar position="static" color="default">
         <Toolbar>
           <Typography variant="h6" color="inherit">
@@ -108,6 +122,8 @@ function App() {
           </Typography>
         </Toolbar>
       </AppBar>
+
+      <AddCar addCar={addCar} fetchCars={fetchCarData} />
 
       <Table columns={columns} data={data} />
 
